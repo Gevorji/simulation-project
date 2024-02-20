@@ -3,24 +3,27 @@ class Map:
     def __init__(self, length, width):
         self.width = width
         self.length = length
-        self.field = {row: [self.Cell(row, column) for column in range(width)] for row in range(length)}
+        self.field = {row: [Cell(row, column) for column in range(width)] for row in range(length)}
 
-    class Cell:
+    def __getitem__(self, item):
+        return self.field[item]
 
-        def __init__(self, x, y, content=None):
-            self.content = content
-            self.y = y
-            self.x = x
+    def field_iterator(self): pass
 
-        def put(self, what):
-            self.content = what
+class Cell:
 
-        def pop(self):
-            obj = self.content
-            self.content = None
-            return obj
+    def __init__(self, x, y, content=None):
+        self.content = content
+        self.y = y
+        self.x = x
 
-        def __str__(self):
-            return f'A cell with {self.content} and {self.x, self.y} coordinates'
+    def put(self, what):
+        self.content = what
 
+    def pop(self):
+        obj = self.content
+        self.content = None
+        return obj
 
+    def __str__(self):
+        return f'A cell with {self.content} and {self.x, self.y} coordinates'
