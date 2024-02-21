@@ -1,14 +1,20 @@
+from collections import OrderedDict
+
+
 class Map:
 
     def __init__(self, length, width):
         self.width = width
         self.length = length
-        self.field = {row: [Cell(row, column) for column in range(width)] for row in range(length)}
+        self.field = OrderedDict(((row, column), Cell(row, column)) for column in range(width) for row in range(length))
 
     def __getitem__(self, item):
         return self.field[item]
 
-    def field_iterator(self): pass
+    def field_iterator(self, *, return_contents=True):
+        for cell in self.field.values():
+            yield cell.content if return_contents else cell
+
 
 class Cell:
 
