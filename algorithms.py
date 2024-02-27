@@ -2,7 +2,7 @@ import heapq
 
 
 def a_star_search(start_point, end_point, graph, eval_func, *, additional_constraints_to_successors=None):
-    explored = []
+    explored = {}
     unexplored = []
     heapq.heapify(unexplored)
     successors_of_node = lambda node: [successor for successor in graph[node]
@@ -11,11 +11,20 @@ def a_star_search(start_point, end_point, graph, eval_func, *, additional_constr
                                                lambda x: x in unexplored,
                                                additional_constraints_to_successors(successor)) if constraint_check)]
 
+    def restore_path_to_start_from(node):
+        cur = node
+        path = []
+        while not cur == start_point:
+            path.append(cur)
+            cur = explored[cur]
+        else:
+            path.append(cur)
+
     heapq.heappush(unexplored, (evaluate_direct_distance(start_point, end_point), start_point))
     while unexplored:
         value, node = heapq.heappop(unexplored)
         if node == end_point:
-            return
+            return restore_path_to_start_from(node)
 
 
 def neighbours_of_node(node, in_graph):
