@@ -1,12 +1,25 @@
 import heapq
 
 
-def a_star_search(start_point, end_point, graph, eval_func):
+def a_star_search(start_point, end_point, graph, eval_func, *, additional_constraints_to_successors=None):
     explored = []
     unexplored = []
     heapq.heapify(unexplored)
-    for node in unexplored: pass
+    successors_of_node = lambda node: [successor for successor in graph[node]
+                                       if all(constraint_check(successor) for constraint_check in
+                                              (lambda x: x in explored,
+                                               lambda x: x in unexplored,
+                                               additional_constraints_to_successors(successor)) if constraint_check)]
 
+    heapq.heappush(unexplored, (evaluate_direct_distance(start_point, end_point), start_point))
+    while unexplored:
+        value, node = heapq.heappop(unexplored)
+        if node == end_point:
+            return
+
+
+def neighbours_of_node(node, in_graph):
+    return in_graph[node]
 
 def evaluate_direct_distance(from_point: tuple, to_point: tuple):
     delta_x, delta_y = to_point[0] - from_point[0], to_point[1] - from_point[1]
@@ -27,4 +40,4 @@ def graph_from_grid(width, length):
 
 if __name__ == '__main__':
     print(evaluate_direct_distance((3, 4),(5, 5)))
-    print(graph_from_grid(3,3))
+    print(graph_from_grid(5,5))
