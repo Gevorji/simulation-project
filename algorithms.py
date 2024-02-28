@@ -1,38 +1,8 @@
 import heapq
 
-
-def a_star_search(start_point, end_point, graph, eval_func, *, additional_constraints_to_successors=None):
-    explored = {}
-    unexplored = []
-    heapq.heapify(unexplored)
-    successors_of_node = lambda node: [successor for successor in graph[node]
-                                       if all(constraint_check(successor) for constraint_check in
-                                              (lambda x: x in explored,
-                                               lambda x: x in unexplored,
-                                               additional_constraints_to_successors(successor)) if constraint_check)]
-
-    def restore_path_to_start_from(node):
-        cur = node
-        path = []
-        while not cur == start_point:
-            path.append(cur)
-            cur = explored[cur]
-        else:
-            path.append(cur)
-
-    heapq.heappush(unexplored, (evaluate_direct_distance(start_point, end_point), start_point))
-    while unexplored:
-        value, node = heapq.heappop(unexplored)
-        if node == end_point:
-            return restore_path_to_start_from(node)
-
-
-def neighbours_of_node(node, in_graph):
-    return in_graph[node]
-
 def evaluate_direct_distance(from_point: tuple, to_point: tuple):
     delta_x, delta_y = to_point[0] - from_point[0], to_point[1] - from_point[1]
-    return int(pow(pow(delta_x, 2) + pow(delta_y, 2), 0.5))
+    return pow(pow(delta_x, 2) + pow(delta_y, 2), 0.5)
 
 
 def graph_from_grid(width, length):
@@ -46,7 +16,41 @@ def graph_from_grid(width, length):
     return graph
 
 
+def a_star_search(start_point, end_point, graph, eval_func=evaluate_direct_distance,
+                  *, additional_constraints_to_successors=None):
+    explored = []
+    unexplored = []
+    heapq.heapify(unexplored)
+
+    def successors_of_node(node):
+        return (successor for successor in graph[node]
+                if all(constraint_check(successor)
+                       for constraint_check in (lambda x: x not in explored, additional_constraints_to_successors)
+                       if constraint_check))
+
+    heapq.heappush(unexplored, (eval_func(start_point, end_point), [start_point]))
+    while unexplored:
+        value, path = heapq.heappop(unexplored)
+        last_path_node = path[-1]
+        if last_path_node == end_point:
+            return path
+        if last_path_node in explored:
+            continue
+        for successor in successors_of_node(last_path_node):
+            further_path = path[:]
+            further_path.append(successor)
+            successor_value = len(path) - 1 + eval_func(successor, end_point)  # find f(x) = g(x) + h(x) of successor
+            heapq.heappush(unexplored, (successor_value, further_path))
+        explored.append(last_path_node)
+    return None
+
+
+
+
+
 
 if __name__ == '__main__':
-    print(evaluate_direct_distance((3, 4),(5, 5)))
-    print(graph_from_grid(5,5))
+    print(evaluate_direct_distance((3, 4), (5, 5)))
+    graph = graph_from_grid(5, 5)
+    path = a_star_search((0,0), (2, 3), graph)
+    print(path)
