@@ -9,9 +9,7 @@ def graph_from_grid(width, length):
     graph = {}
     for x in range(width):
         for y in range(length):
-            graph[x, y] = [(x, y) for x, y in ((x-1, y-1), (x, y-1), (x+1, y-1),
-                                             (x-1, y), (x+1, y),
-                                             (x-1, y+1), (x, y+1), (x+1, y+1))
+            graph[x, y] = [(x, y) for x, y in ((x, y-1), (x-1, y), (x+1, y), (x, y+1))
                            if width > x >= 0 and length > y >= 0]
     return graph
 
