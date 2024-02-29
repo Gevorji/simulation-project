@@ -1,4 +1,4 @@
-from entityabc import Entity
+from .entityabc import Entity
 
 
 class Grass(Entity):
