@@ -1,8 +1,9 @@
 from map import Map
 
+
 class BaseRectangleFieldRenderer(Map):
 
-    def __init__(self, rend_obj, layout_mappings: dict):
+    def __init__(self, rend_obj, *, layout_mappings: dict):
         super().__init__(rend_obj.length, rend_obj.width)
         # an assertion for all keys of layout mappings to be type class instances
         self.layout_mappings = layout_mappings
@@ -15,7 +16,7 @@ class BaseRectangleFieldRenderer(Map):
                                                    # A field iterator returns objects
                                                    # that renderable objects contains in a strict order: from left upper
                                                    # corner to the bottom right corner
-
+ ren
 
 class ConsoleRenderer(BaseRectangleFieldRenderer):
 
