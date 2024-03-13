@@ -16,8 +16,6 @@ class BaseRectangleFieldRenderer(Map):
                                                    # A field iterator returns objects
                                                    # that renderable objects contains in a strict order: from left upper
                                                    # corner to the bottom right corner
- ren
-
 class ConsoleRenderer(BaseRectangleFieldRenderer):
 
     def display(self):
