@@ -1,6 +1,6 @@
 from enum import Enum
 
-class Action(Enum):
+class Actions(Enum):
     MOVE_RIGHT = 'mrght'
     MOVE_LEFT = 'mlft'
     MOVE_UP = 'mup'
