@@ -11,14 +11,13 @@ class Map:
     def __getitem__(self, item):
         return self.field[item]
 
-    def field_iterator(self, from_point=None, to_point=None, *, return_contents=True, rectangle_area=False):
+    def field_iterator(self, from_point=None, to_point=None, *, return_contents=True):
         fwidth, flength = self.width, self.length
-        from_point = from_point or 0, 0
-        to_point = to_point or fwidth, flength
-        width_range = range(from_point[0], to_point[0]) if rectangle_area \
-            else (x for y in range(to_point[1]) for x in range(fwidth) if x)
-        for x in range(fwidth): pass
-
+        from_point = from_point or (0, 0)
+        to_point = to_point or (fwidth-1, flength-1)
+        for y in range(from_point[1], to_point[1]+1):
+            for x in range(from_point[0], to_point[0]+1):
+                yield self[x, y].content if return_contents else self[x, y]
 
 class Cell:
 
