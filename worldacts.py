@@ -13,6 +13,7 @@ class WorldAction(ABC):
     def execute(self, *args, **kwargs):
         pass
 
+class ObjectSpawner(WorldAction): pass
 
 class PopulateWorld(WorldAction):
 
@@ -47,15 +48,55 @@ class PopulateWorld(WorldAction):
 
 
 class MakeEachObjDoMove(WorldAction):
+
+    def __init__(self, act_handler, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.act_handler = act_handler
+
     def execute(self):
-        act_handler = Handler()
         _map = self._world_map
         for cell in _map.field_iterator():
             entity = cell.content
             if hasattr(entity, 'make_move'):
-                actions = list(entity.make_move())  # because we expect obj to produce 1 or more actions
+                vis_area = self.get_visible_area_for_creature(cell)
+                actions = list(entity.make_move(vis_area))  # because we expect obj to produce 1 or more actions
                 for action in actions:
-                    act_handler.handle(cell, action, _map)
+                    procedure = self.act_handler.handle(cell, action, _map)
+                    procedure()
+
+    def get_visible_area_for_creature(self, cell):
+        x_lim = self._world_map.width
+        y_lim = self._world_map.length
+        creature = cell.content
+        vis_rad = creature.vis_radius
+        top_left_point_x = cell.x - vis_rad if cell.x > vis_rad else 0
+        top_left_point_y = cell.y - vis_rad if cell.y > vis_rad else 0
+        bot_right_point_x = cell.x + vis_rad
+        bot_right_point_y = cell.y + vis_rad
+        bot_right_point_x = x_lim if bot_right_point_x > x_lim else bot_right_point_x
+        bot_right_point_y = y_lim if bot_right_point_y > y_lim else bot_right_point_y
+
+        return self._world_map.field_iterator(from_point=(top_left_point_x, top_left_point_y),
+                                              to_point=(bot_right_point_x, bot_right_point_y))
+
+
+class ResourceRestoring(WorldAction):
+
+    def __init__(self, resource, min_resource_limit, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.resource = resource
+        self.min_resource_limit = min_resource_limit
+
+    def execute(self, *args, **kwargs):
+        if self.count_resource() <= self.min_resource_limit: pass
+
+
+    def count_resource(self):
+        count = 0
+        for cell in self._world_map.field_iterator():
+            if isinstance(cell.content, self.resource):
+                count += 1
+        return count
 
 
 class Handler:
