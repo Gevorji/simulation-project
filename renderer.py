@@ -12,6 +12,7 @@ class BaseRectangleFieldRenderer(Map):
     def render(self):
         for cell, obj in zip(self.field_iterator(return_contents=False), self.rend_obj.field_iterator()): # walks through field and updates self field state
             mapped_obj = self.layout_mappings[type(obj)]
+            cell.pop()
             cell.put(mapped_obj)                                   # expects renderable object to have a method field_iterator.
                                                    # A field iterator returns objects
                                                    # that renderable objects contains in a strict order: from left upper
