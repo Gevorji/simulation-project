@@ -11,7 +11,9 @@ obstacles_testcases = [
     {'start_point': (0, 0), 'end_point': (5, 5), 'obstacles_config': ((4, 6), (4, 5), (5, 4), (6, 3), (7, 3))},
     {'start_point': (0, 0), 'end_point': (5, 5),
      'obstacles_config': ((4, 6), (4, 5), (5, 4), (6, 3), (7, 3), (5, 6), (6, 5))},
-    {'start_point': (0, 0), 'end_point': (2, 2), 'obstacles_config': ((1, 1), (2, 1))}
+    {'start_point': (0, 0), 'end_point': (2, 2), 'obstacles_config': ((1, 1), (2, 1))},
+    {'start_point': (0, 0), 'end_point': (0, 0), 'obstacles_config': ((1, 1), (2, 1))}
+
 ]
 
 
@@ -22,6 +24,7 @@ class WalkTracePrinter(ConsoleRenderer):
 
     def mark_route(self, root):
         for point in root:
+            self.field[point].pop()
             self.field[point].put('Х')
 
     def print_field(self):
@@ -51,8 +54,11 @@ def obstacles_passing():
                               additional_constraints_to_successors=additional_constraints)
         if route:
             shower.mark_route(route)
-        else: 'Root wasnt found'
+            print(route)
+        else:
+            'Root wasnt found'
         shower.print_field()
+
 
 if __name__ == '__main__':
     obstacles_passing()
