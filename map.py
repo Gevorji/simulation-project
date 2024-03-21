@@ -27,7 +27,7 @@ class Cell:
         self.x = x
 
     def put(self, what):
-        assert self.content, f'Attempt to put an object into a cell that already contains {self.content}'
+        assert not self.content, f'Attempt to put an object into a cell that already contains {self.content}'
         self.content = what
 
     def pop(self):
