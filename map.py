@@ -3,10 +3,10 @@ from collections import OrderedDict
 
 class Map:
 
-    def __init__(self, length, width):
+    def __init__(self, width, length):
         self.width = width
         self.length = length
-        self.field = OrderedDict(((row, column), Cell(row, column)) for column in range(width) for row in range(length))
+        self.field = OrderedDict(((x, y), Cell(x, y)) for y in range(length) for x in range(width) )
 
     def __getitem__(self, item):
         return self.field[item]
