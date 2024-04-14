@@ -19,6 +19,19 @@ class Map:
             for x in range(from_point[0], to_point[0]+1):
                 yield self[x, y].content if return_contents else self[x, y]
 
+    def get_objs_numbers(self):
+        numbers = {}
+        for cell in self.field.values():
+            obj = cell.content
+            if not obj:
+                continue
+            obj_type = type(obj)
+            if obj_type in numbers:
+                numbers[obj_type] += 1
+            else:
+                numbers[obj_type] = 1
+        return numbers
+
 class Cell:
 
     def __init__(self, x, y, content=None):
