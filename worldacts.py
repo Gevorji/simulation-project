@@ -1,7 +1,13 @@
+import simulationlogger
+import world_objects.entityabc
 from world_objects import *
 from world_objects.actions import Actions as ObjActions
 from abc import ABC, abstractmethod
 import random
+
+OBJ_TYPES = [
+    Herbivore, Predator, Grass, Rock
+]
 
 
 class WorldAction(ABC):
@@ -13,58 +19,117 @@ class WorldAction(ABC):
     def execute(self, *args, **kwargs):
         pass
 
-class ObjectSpawner(WorldAction): pass
+
+class ObjectSpawner:
+
+    def __init__(self, _world_map, obj=None, target_cell=None):
+        self._world_map = _world_map
+        self.target_cell = target_cell
+        self.obj = obj
+
+    def spawn(self):
+        self.target_cell.put(self.obj)
+
+
+class RandomLocationObjectSpawner(ObjectSpawner):
+    def spawn(self):
+        _map, obj = self._world_map, self.obj
+        while True:
+            x, y = random.randint(0, _map.width), random.randint(0, _map.length)
+            try:
+                _map[x, y].put(obj)
+                break
+            except AssertionError:
+                continue
+
+class GenerateWorldObjects(WorldAction):
+
+    def __init__(self, parameters, objs_buffer: list,world_map):
+        super().__init__(world_map)
+        self.objs_buffer = objs_buffer
+        self.parameters = parameters
+
+    def execute(self):
+        objects = self.objs_buffer
+        cells_number = self._world_map.width*self._world_map.length
+        wparams = self.parameters
+        for obj_type in OBJ_TYPES:
+            if not wparams.getboolean('DEFAULT', 'RandomizeMap'):
+                n = wparams.get('DEFAULT', f'n{obj_type.__name__}')
+            else:
+                rand_boundaries = tuple(int(param) * cells_number or 1 for param
+                                        in
+                                        wparams['RANDOM_OBJ_NUMBERS_RATIOS'][f'{obj_type.__name__}number'].split(','))
+                n = random.randint(*rand_boundaries) \
+
+            for i in range(n):
+                obj_params = self.get_parameters(obj_type)
+                obj = obj_type(obj_params)
+                objects.append(obj)
+
+    def get_parameters(self, for_obj_type):
+        # if parameter was not initialized on start input request
+        # or set up manually in configs.ini, then it is generated randomly
+        # using boundaries defined in configs.ini
+        gparameters = self.parameters
+        obj_parameters = {}
+        types_section = gparameters[for_obj_type.__name__.upper()]
+        for obj_param in types_section:
+            obj_parameters[obj_param] = val = types_section[obj_param]
+            if val == 'empty':
+                rand_boundaries = [int(b) for b in
+                                   gparameters.get(f'RAND.{for_obj_type.__name__.upper()}_PARAMS', obj_param).split(',')]
+                fallback = random.randint(*rand_boundaries)
+                obj_parameters[obj_param] = fallback
+        return obj_parameters
 
 class PopulateWorld(WorldAction):
 
-    def execute(self, wparams):
+    def __init__(self, wparams, objs_buffer,*args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.objs_buffer = objs_buffer
+        self.obj_types = OBJ_TYPES
+        self.wparams = wparams
+
+    def execute(self):
         _map = self._world_map
-        cells_number = _map.width * _map.length
-        obj_howmuch = {}
-        rand_creatures_num_boundaries = (wparams['USR_RAND_BOUNDARIES_FOR_CREATURES']
-                                         or (cells_number // 20 or 1, cells_number // 5 or 1))
-        rand_rocks_num_boundaries = (wparams['USR_RAND_BOUNDARIES_FOR_ROCKS']
-                                     or (cells_number // 8 or 1, cells_number // 3 or 1))
-        rand_grass_num_boundaries = (wparams['USR_RAND_BOUNDARIES_FOR_GRASS']
-                                     or (cells_number // 8 or 1, cells_number // 3 or 1))
-        obj_howmuch[Predator] = wparams['STANDARD_PREDATORS_NUMBER']
-        obj_howmuch[Herbivore] = wparams['STANDARD_HERBIVORES_NUMBER']
-        obj_howmuch[Rock] = wparams['STANDARD_ROCKS_NUMBER']
-        obj_howmuch[Grass] = wparams['STANDARD_GRASS_NUMBER']
-        if wparams['RANDOMIZE_CREATURES_NUMBER'] or wparams['USR_RAND_BOUNDARIES_FOR_CREATURES']:
-            obj_howmuch[Predator] = random.randint(*rand_creatures_num_boundaries)
-            obj_howmuch[Herbivore] = random.randint(*rand_creatures_num_boundaries)
-            obj_howmuch[Rock] = random.randint(*rand_rocks_num_boundaries)
-            obj_howmuch[Grass] = random.randint(*rand_grass_num_boundaries)
-        for obj, number in obj_howmuch.items():
-            for i in range(number):
-                while True:
-                    x, y = random.randint(0, _map.width), random.randint(0, _map.length)
-                    try:
-                        _map[x, y].put(obj)
-                        break
-                    except AssertionError:
-                        continue
+        # placing objects on map
+        spawner = RandomLocationObjectSpawner(_map)
+        for obj in self.objs_buffer:
+            spawner.obj = obj
+            spawner.spawn()
 
 
 class MakeEachObjDoMove(WorldAction):
 
-    def __init__(self, act_handler, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, act_handler, logger: simulationlogger.Logger, world_map):
+        super().__init__(world_map)
+        self.logger = logger
         self.act_handler = act_handler
 
     def execute(self):
         _map = self._world_map
+        logger = self.logger
+        logger.start_turn_session()
         for cell in _map.field_iterator():
             entity = cell.content
             if hasattr(entity, 'make_move'):
                 vis_area = self.get_visible_area_for_creature(cell)
-                actions = list(entity.make_move(vis_area))  # because we expect obj to produce 1 or more actions
-                for action in actions:
+                for action in entity.make_move(vis_area):  # because we expect obj to produce 1 or more actions
+                    if action is None:
+                        logger.register(simulationlogger.ActionEntry(action, cell, cell))
+                        continue
                     procedure = self.act_handler.handle(cell, action, _map)
+                    target_cell = procedure.args[1]
+                    logger.register(simulationlogger.ActionEntry(action, cell, target_cell))
                     procedure()
+                    if isinstance(target_cell.content, world_objects.entityabc.Entity):
+                        self.act_handler.handle_state(target_cell)
+                        logger.register(simulationlogger.EntityStateEntry(target_cell,
+                                                                          target_cell.content.health_points))
 
     def get_visible_area_for_creature(self, cell):
+
         x_lim = self._world_map.width
         y_lim = self._world_map.length
         creature = cell.content
@@ -86,10 +151,14 @@ class ResourceRestoring(WorldAction):
         super().__init__(*args, **kwargs)
         self.resource = resource
         self.min_resource_limit = min_resource_limit
+        self.spawner = resource
 
     def execute(self, *args, **kwargs):
-        if self.count_resource() <= self.min_resource_limit: pass
-
+        shortage = self.count_resource() - self.min_resource_limit
+        some_extras = random.randint(0, 3) if shortage < 0 else 0
+        while shortage < some_extras:
+            self.spawner.execute()
+            shortage += 1
 
     def count_resource(self):
         count = 0
@@ -114,22 +183,26 @@ class Handler:
     def __init__(self):
         pass
 
-    def handle(self, cell, action, _map):  # return a function that will be placed in queue
+    def handle(self, cell, action, _map):
 
         handler = self.action_handler_bindings[action.type]
         from_cell = cell
         offsetx, offsety = self.direction_to_coordinates_offset[action.direction]
         to_cell = _map[from_cell.x + offsetx, from_cell.y + offsety]
-
-        return self._make_function_for_suspended_call(handler, args=(from_cell, to_cell))
+        return self._make_suspended_callable(handler, args=(from_cell, to_cell))
 
     @staticmethod
-    def _make_function_for_suspended_call(func, *, args: tuple = (), kwargs: dict = {}):
+    def _make_suspended_callable(func, *, args: tuple = (), kwargs: dict = {}):
 
-        def to_call_later():
-            return func(*args, **kwargs)
+        class SuspendedCallable:
+            def __init__(self):
+                self.args = args
+                self.kwargs = kwargs
 
-        return to_call_later
+            def __call__(self):
+                return func(*self.args, **self.kwargs)
+
+        return SuspendedCallable()
 
     @staticmethod
     def handle_replace(from_cell, to_cell):
@@ -154,4 +227,10 @@ class Handler:
         if hasattr(consumable, 'consume') and hasattr(eater, 'restore_hp'):
             eater.restore_hp(consumable.consume())
 
-    action_handler_bindings[ObjActions.EAT] = handle_eating
+    @staticmethod
+    def handle_state(cell):
+        entity = cell.content
+        if hasattr(entity, 'is_dead'):
+            if entity.is_dead():
+                cell.pop()
+        # how do we handle eaten Grass?
