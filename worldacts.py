@@ -176,7 +176,7 @@ class Handler:
         ObjActions.UP: (0, -1),
         ObjActions.DOWN: (0, 1),
         ObjActions.LEFT: (-1, 0),
-        ObjActions.RIGHT: (0, 1)
+        ObjActions.RIGHT: (1, 0)
     }
     action_handler_bindings = {}
 
