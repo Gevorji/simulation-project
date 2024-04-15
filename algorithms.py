@@ -42,7 +42,17 @@ def a_star_search(start_point, end_point, graph, eval_func=evaluate_direct_dista
         explored.append(last_path_node)
     return None
 
-
+def transform_to_lrud_sequence(path: tuple):
+    lrud_sequence = []
+    for i in range(1, len(path)):
+        x1, y1 = path[i-1]
+        x2, y2 = path[i]
+        offset = x2 - x1, y2 - y1
+        if offset == (0, -1): lrud_sequence.append('up')
+        if offset == (0, 1): lrud_sequence.append('down')
+        if offset == (-1, 0): lrud_sequence.append('left')
+        if offset == (1, 0): lrud_sequence.append('right')
+    return lrud_sequence
 
 
 
