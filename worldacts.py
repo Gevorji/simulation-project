@@ -59,7 +59,7 @@ class GenerateWorldObjects(WorldAction):
             else:
                 rand_boundaries = tuple(int(param) * cells_number or 1 for param
                                         in
-                                        wparams['RANDOM_OBJ_NUMBERS_RATIOS'][f'{obj_type.__name__}number'].split(','))
+                                        wparams['RANDOM_OBJ_NUMBERS_RATIOS'][f'{obj_type.__name__}Number'].split(','))
                 n = random.randint(*rand_boundaries) \
 
             for i in range(n):
