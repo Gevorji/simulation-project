@@ -147,11 +147,11 @@ class MakeEachObjDoMove(WorldAction):
 
 class ResourceRestoring(WorldAction):
 
-    def __init__(self, resource, min_resource_limit, *args, **kwargs):
+    def __init__(self, resource, min_resource_limit, spawner, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.resource = resource
         self.min_resource_limit = min_resource_limit
-        self.spawner = resource
+        self.spawner = spawner
 
     def execute(self, *args, **kwargs):
         shortage = self.count_resource() - self.min_resource_limit
