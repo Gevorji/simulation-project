@@ -60,6 +60,7 @@ class Simulation:
         self._turn_actions = [
             wacts.MakeEachObjDoMove(action_handler, logger,_map),
             wacts.ResourceRestoring(wacts.Grass, 0.3 * _map.get_objs_numbers()[wacts.Grass],
+                                    logger,
                                     wacts.RandomLocationObjectSpawner(_map, wacts.Grass))
         ]
         objects_lmappings = {

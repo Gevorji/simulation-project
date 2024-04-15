@@ -17,6 +17,11 @@ class EntityStateEntry:
     hp: int
 
 
+@dataclasses.dataclass
+class RestorationObjectsEntry:
+    object_type: str
+    how_much: int
+
 class Logger:
     def __init__(self):
         self.registry = []
@@ -54,4 +59,7 @@ def make_presentational_format(entry):
         entity = entry.entity
         entity_name = getattr(entity.content, '_name', '(nameless)')
         return f'{entity_name} (pos {entity.x, entity.y}) state: hp={entry.hp}'
+
+    if isinstance(entry, RestorationObjectsEntry):
+        return f'Restoring {entry.object_type}: {entry.how_much} units'
 

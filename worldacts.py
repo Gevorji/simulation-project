@@ -147,8 +147,9 @@ class MakeEachObjDoMove(WorldAction):
 
 class ResourceRestoring(WorldAction):
 
-    def __init__(self, resource, min_resource_limit, spawner, *args, **kwargs):
+    def __init__(self, resource, min_resource_limit, spawner, logger, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.logger = logger
         self.resource = resource
         self.min_resource_limit = min_resource_limit
         self.spawner = spawner
@@ -156,6 +157,8 @@ class ResourceRestoring(WorldAction):
     def execute(self, *args, **kwargs):
         shortage = self.count_resource() - self.min_resource_limit
         some_extras = random.randint(0, 3) if shortage < 0 else 0
+        self.logger.register(simulationlogger.RestorationObjectsEntry(self.resource.__name__,
+                                                                      abs(shortage) + some_extras))
         while shortage < some_extras:
             self.spawner.execute()
             shortage += 1
