@@ -116,6 +116,8 @@ class Herbivore(Creature):
                                 nearby_cells))
         return available
 
+    def restore_hp(self, amount):
+        self.health_points += amount
 
 # appending Herbivore to Predators target list
 Predator.haunted_creatures.append(Herbivore)
