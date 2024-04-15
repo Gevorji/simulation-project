@@ -110,7 +110,6 @@ class MakeEachObjDoMove(WorldAction):
     def execute(self):
         _map = self._world_map
         logger = self.logger
-        logger.start_turn_session()
         for cell in _map.field_iterator():
             entity = cell.content
             if hasattr(entity, 'make_move'):

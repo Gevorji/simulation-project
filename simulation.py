@@ -51,7 +51,7 @@ class Simulation:
         import worldacts as wacts
         _map = Map(params.getint('DEFAULT', 'field.width', ), params.getint('DEFAULT', 'field.length', ))
         action_handler = wacts.Handler()
-        logger = simulationlogger.Logger()
+        self.logger = logger = simulationlogger.Logger()
         objects_buffer = []
         self._init_actions = [
             wacts.GenerateWorldObjects(params, objects_buffer, _map),
@@ -96,8 +96,10 @@ class Simulation:
         pass
 
     def next_turn(self):
+        self.logger.start_turn_session()
         for wact in self._turn_actions:
             wact.execute()
+        self.logger.close_turn_session()
         self.renderer.render()
 
 
