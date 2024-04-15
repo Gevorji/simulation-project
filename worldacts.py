@@ -76,7 +76,7 @@ class GenerateWorldObjects(WorldAction):
         types_section = gparameters[for_obj_type.__name__.upper()]
         for obj_param in types_section:
             obj_parameters[obj_param] = val = types_section[obj_param]
-            if val == 'empty':
+            if not val:
                 rand_boundaries = [int(b) for b in
                                    gparameters.get(f'RAND.{for_obj_type.__name__.upper()}_PARAMS', obj_param).split(',')]
                 fallback = random.randint(*rand_boundaries)
