@@ -113,12 +113,14 @@ class Parameter:
 
 class InpParametersParser:
 
-    def __init__(self, patterns: list | tuple):
+    def __init__(self, patterns: list | tuple, delim: str):
+        self.delim = delim
         import re
         self.patterns = [re.compile(p) for p in patterns]
         self._matches = None
 
-    def parse(self, line, delim):
+    def parse(self, line):
+        delim = self.delim
         params = []
         param_strs = line.split()
         print(param_strs)
@@ -183,7 +185,7 @@ if __name__ == '__main__':
         inp = input('Enter stuff: ')
         # inp = 'Herbivore.heal=4'
         try:
-            parsed = param_parser.parse(inp, INP_PARAM_DELIM)
+            parsed = param_parser.parse(inp)
             print([f'{param.name} set to {param.value}' for param in parsed])
             apply_inputted_parameters(parsed, configs)
         except ParameterInputError as e:
