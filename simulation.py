@@ -8,9 +8,7 @@ from map import Map
 from renderer import ConsoleRenderer as Renderer
 import random
 import sys
-import keyboard
 
-print(sys.base_prefix != sys.prefix)
 
 # initial world properties
 # TODO: parameters should be loaded from ini file, user should be able to set his own one-run parameters as
