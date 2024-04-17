@@ -156,7 +156,7 @@ def apply_inputted_parameters(params: list, configs):
             section[param.name] = param.value
         if param.re.pattern == INP_PARAMETERS_PATTERNS[2]:
             section = configs['DEFAULT']
-            section['RandomizeMap'] = param.value
+            section['RandomizeMap'] = str(param.value)
         if param.re.pattern == INP_PARAMETERS_PATTERNS[3]:
             section = configs['DEFAULT']
             section[param.name] = param.value
