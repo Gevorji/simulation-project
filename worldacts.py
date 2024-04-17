@@ -65,7 +65,7 @@ class GenerateWorldObjects(WorldAction):
 
             for i in range(n):
                 obj_params = self.get_parameters(obj_type)
-                obj = obj_type(obj_params)
+                obj = obj_type(**obj_params)
                 objects.append(obj)
 
     def get_parameters(self, for_obj_type):
