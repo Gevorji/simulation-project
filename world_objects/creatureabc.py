@@ -14,13 +14,14 @@ class Creature(Entity):
                        '_area_size',
                        '_abs_pos']
 
-    def __init__(self, health_points, move_speed, vis_radius, sex):  # sex field is reserved for breeding mechanics
+    def __init__(self, health_points, move_speed, vis_radius, sex, _id=None):  # sex field is reserved for breeding mechanics
         self.sex = sex
         self.vis_radius = vis_radius
         self.health_points = health_points
         self.move_speed = move_speed
         self.is_alive = True
         self._memory = dict(_path=None, _area_graph=None)
+        self._id = _id
 
     @abstractmethod
     def make_move(self, area):
@@ -147,6 +148,10 @@ class Creature(Entity):
             memo['_area_size'] = (width, length)
 
         return memo['_area_size']
+
+    @property
+    def name(self):
+        return f'{self.__class__.__name__}{self._id if self._id else "(w/out id)"}'
 
 
 if __name__ == '__main__': pass

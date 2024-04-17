@@ -18,8 +18,8 @@ def transform_to_lrud_sequence(path: tuple):
 class Predator(Creature):
     haunted_creatures = []
 
-    def __init__(self, attack_damage, health_points, move_speed, vis_radius, sex):
-        super().__init__(health_points, move_speed, vis_radius, sex)
+    def __init__(self, attack_damage, health_points, move_speed, vis_radius, sex, _id=None):
+        super().__init__(health_points, move_speed, vis_radius, sex, _id)
         self.attack_damage = attack_damage
         self._memory['_victim'] = None
 
@@ -63,8 +63,8 @@ class Predator(Creature):
 
 class Herbivore(Creature):
 
-    def __init__(self, health_points, move_speed, vis_radius, sex):
-        super().__init__(health_points, move_speed, vis_radius, sex)
+    def __init__(self, health_points, move_speed, vis_radius, sex, _id=None):
+        super().__init__(health_points, move_speed, vis_radius, sex, _id)
 
     def make_move(self, area):
         self.clean_memo()
