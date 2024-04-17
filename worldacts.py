@@ -36,7 +36,7 @@ class RandomLocationObjectSpawner(ObjectSpawner):
     def spawn(self):
         _map, obj = self._world_map, self.obj
         while True:
-            x, y = random.randint(0, _map.width), random.randint(0, _map.length)
+            x, y = random.randint(0, _map.width-1), random.randint(0, _map.length-1)
             try:
                 _map[x, y].put(obj)
                 break
