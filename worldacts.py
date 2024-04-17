@@ -1,3 +1,4 @@
+import map as wmap
 import simulationlogger
 import world_objects.entityabc
 from world_objects import *
@@ -12,7 +13,7 @@ OBJ_TYPES = [
 
 class WorldAction(ABC):
 
-    def __init__(self, world_map):
+    def __init__(self, world_map: wmap.Map):
         self._world_map = world_map
 
     @abstractmethod
