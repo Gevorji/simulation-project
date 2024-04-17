@@ -29,7 +29,7 @@ default_gen_parameters = dict(
 
 INP_PARAMETERS_PATTERNS = [
     '(mapsz)=(\\d+[*]\\d+)',
-    '(nHerbivore|nPredators|nGrass)=(\\d+)',
+    '(nHerbivore|nPredator|nGrass|nRock)=(\\d+)',
     '(r)',
     '(frspeed)=(\\d+)',
     '((Herbivore|Predator|Grass)[.](ms|hp|visr|ad|heal))=(\\d+)'
