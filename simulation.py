@@ -164,7 +164,7 @@ def apply_inputted_parameters(params: list, configs):
             obj_name, attr = param.name.split('.')
             section = configs[f'{obj_name.upper()}']
             attr = {
-                'ms': 'movement_speed',
+                'ms': 'move_speed',
                 'ad': 'attack_damage',
                 'visr': 'vis_rad',
                 'hp': 'health_points',
