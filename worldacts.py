@@ -58,10 +58,10 @@ class GenerateWorldObjects(WorldAction):
             if not wparams.getboolean('DEFAULT', 'RandomizeMap'):
                 n = wparams.getint('DEFAULT', f'n{obj_type.__name__}')
             else:
-                rand_boundaries = tuple(int(param) * cells_number or 1 for param
+                rand_boundaries = tuple(round(float(param)) * cells_number or 1 for param
                                         in
                                         wparams['RANDOM_OBJ_NUMBERS_RATIOS'][f'{obj_type.__name__}Number'].split(','))
-                n = random.randint(*rand_boundaries) \
+                n = random.randint(*rand_boundaries)
 
             for i in range(n):
                 obj_params = self.get_parameters(obj_type)
