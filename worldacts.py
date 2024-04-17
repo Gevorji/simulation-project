@@ -76,6 +76,8 @@ class GenerateWorldObjects(WorldAction):
         obj_parameters = {}
         types_section = gparameters[for_obj_type.__name__.upper()]
         for obj_param in types_section:
+            if obj_param in gparameters['DEFAULT']:  # this lets bypassing of a redundant default keys in section  -
+                continue                             # configparser's unwanted behaviour for our case
             obj_parameters[obj_param] = val = types_section[obj_param]
             if not val:
                 rand_boundaries = [int(b) for b in
