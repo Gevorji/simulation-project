@@ -86,8 +86,8 @@ class GenerateWorldObjects(WorldAction):
 
 class PopulateWorld(WorldAction):
 
-    def __init__(self, wparams, objs_buffer,*args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, wparams, objs_buffer, world_map):
+        super().__init__(world_map)
         self.objs_buffer = objs_buffer
         self.obj_types = OBJ_TYPES
         self.wparams = wparams
