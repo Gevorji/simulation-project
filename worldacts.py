@@ -45,7 +45,7 @@ class RandomLocationObjectSpawner(ObjectSpawner):
 
 class GenerateWorldObjects(WorldAction):
 
-    def __init__(self, parameters, objs_buffer: list,world_map):
+    def __init__(self, parameters, objs_buffer: list, world_map):
         super().__init__(world_map)
         self.objs_buffer = objs_buffer
         self.parameters = parameters
@@ -56,7 +56,7 @@ class GenerateWorldObjects(WorldAction):
         wparams = self.parameters
         for obj_type in OBJ_TYPES:
             if not wparams.getboolean('DEFAULT', 'RandomizeMap'):
-                n = wparams.get('DEFAULT', f'n{obj_type.__name__}')
+                n = wparams.getint('DEFAULT', f'n{obj_type.__name__}')
             else:
                 rand_boundaries = tuple(int(param) * cells_number or 1 for param
                                         in
