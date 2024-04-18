@@ -155,8 +155,8 @@ class MakeEachObjDoMove(WorldAction):
 
 class ResourceRestoring(WorldAction):
 
-    def __init__(self, resource, min_resource_limit, spawner, logger, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, resource, min_resource_limit, spawner, logger, world_map):
+        super().__init__(world_map)
         self.logger = logger
         self.resource = resource
         self.min_resource_limit = min_resource_limit
