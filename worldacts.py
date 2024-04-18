@@ -3,6 +3,7 @@ import simulationlogger
 import world_objects.entityabc
 from world_objects import *
 from world_objects.actions import Actions as ObjActions
+from world_objects.creatureabc import Creature
 from abc import ABC, abstractmethod
 import random
 
@@ -51,6 +52,7 @@ class GenerateWorldObjects(WorldAction):
         self.parameters = parameters
 
     def execute(self):
+        _id = 1
         objects = self.objs_buffer
         cells_number = self._world_map.width*self._world_map.length
         wparams = self.parameters
@@ -65,6 +67,9 @@ class GenerateWorldObjects(WorldAction):
 
             for i in range(n):
                 obj_params = self.get_parameters(obj_type)
+                if issubclass(obj_type, Creature):
+                    _id += 1
+                    obj_params['_id'] = _id
                 obj = obj_type(**obj_params)
                 objects.append(obj)
 
@@ -85,6 +90,7 @@ class GenerateWorldObjects(WorldAction):
                 fallback = random.randint(*rand_boundaries)
                 obj_parameters[obj_param] = fallback
         return obj_parameters
+
 
 class PopulateWorld(WorldAction):
 
