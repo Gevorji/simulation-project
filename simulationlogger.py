@@ -32,7 +32,7 @@ class Logger:
 
     def register(self, entry: ActionEntry | EntityStateEntry):
         session = self._current_turn_session
-        assert session, 'No started session to work with'
+        assert session is not None, 'No started session to work with'
         session.append(entry)
 
     def close_turn_session(self):
