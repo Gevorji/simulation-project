@@ -161,15 +161,11 @@ class ResourceRestoring(WorldAction):
         self.logger.register(simulationlogger.RestorationObjectsEntry(self.resource.__name__,
                                                                       abs(shortage) + some_extras))
         while shortage < some_extras:
-            self.spawner.execute()
+            self.spawner.spawn()
             shortage += 1
 
     def count_resource(self):
-        count = 0
-        for cell in self._world_map.field_iterator():
-            if isinstance(cell.content, self.resource):
-                count += 1
-        return count
+        return self._world_map.get_objs_numbers().get(self.resource, 0)
 
 
 class Handler:
