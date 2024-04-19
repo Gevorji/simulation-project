@@ -3,7 +3,7 @@ from configparser import ConfigParser
 
 import map
 from simulation import INP_PARAMETERS_PATTERNS, InpParametersParser, apply_inputted_parameters, ParameterInputError
-from worldacts import GenerateWorldObjects, PopulateWorld
+from worldacts import PopulateWorld
 from map import Map
 from renderer import ConsoleRenderer
 from world_objects import *
@@ -33,11 +33,8 @@ def get_objs_params(_map: map.Map):
     return '\n'.join(objs_params)
 
 
-
-
 tested_wacts = [
-    GenerateWorldObjects(configs, objs_buffer, _map),
-    PopulateWorld(configs, objs_buffer, _map)
+    PopulateWorld(configs, _map)
 ]
 
 test_param_inputs = [

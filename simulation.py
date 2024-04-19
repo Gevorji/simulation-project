@@ -52,8 +52,7 @@ class Simulation:
         self.logger = logger = simulationlogger.Logger()
         objects_buffer = []
         self._init_actions = [
-            wacts.GenerateWorldObjects(params, objects_buffer, _map),
-            wacts.PopulateWorld(params, objects_buffer, _map)
+            wacts.PopulateWorld(params, _map)
         ]
         self._turn_actions = [
             wacts.MakeEachObjDoMove(action_handler, logger,_map),

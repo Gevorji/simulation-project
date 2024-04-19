@@ -1,3 +1,5 @@
+from typing import Any, Optional, Union
+
 import map as wmap
 import simulationlogger
 import world_objects.entityabc
@@ -24,18 +26,50 @@ class WorldAction(ABC):
 
 class ObjectSpawner:
 
-    def __init__(self, _world_map, obj=None, target_cell=None):
+    _spawn_count = 0
+
+    def __init__(self, _world_map, wparams, obj_type: Union[*OBJ_TYPES] = None, target_cell: wmap.Cell = None):
+        self.obj_params = wparams[obj_type.__name__.upper()]
+        self.wparams = wparams
         self._world_map = _world_map
         self.target_cell = target_cell
-        self.obj = obj
+        self.obj_type = obj_type
+
+    def generate_obj(self):
+        self.__class__._spawn_count += 1
+        params = self.get_parameters()
+        if issubclass(self.obj_type, Creature):
+
+            params['_id'] = self._spawn_count
+        return self.obj_type(**params)
 
     def spawn(self):
-        self.target_cell.put(self.obj)
+        obj = self.generate_obj()
+        self.target_cell.put(obj)
+
+    def get_parameters(self):
+        # if parameter was not initialized on start input request
+        # or set up manually in configs.ini, then it is generated randomly
+        # using boundaries defined in configs.ini
+        wparams = self.wparams
+        obj_params = self.obj_params
+        inst_params = {}
+        for obj_param in obj_params:
+            if obj_param in wparams['DEFAULT']:  # this lets bypassing of a redundant default keys in section  -
+                continue                             # configparser's unwanted behaviour for our case
+            inst_params[obj_param] = val = obj_params[obj_param]
+            if not val:
+                rand_boundaries = [int(b) for b in
+                                   wparams.get(f'RAND.{self.obj_type.__name__.upper()}_PARAMS', obj_param).split(',')]
+                fallback = random.randint(*rand_boundaries)
+                inst_params[obj_param] = fallback
+        return inst_params
 
 
 class RandomLocationObjectSpawner(ObjectSpawner):
     def spawn(self):
-        _map, obj = self._world_map, self.obj
+        _map = self._world_map
+        obj = self.generate_obj()
         while True:
             x, y = random.randint(0, _map.width-1), random.randint(0, _map.length-1)
             try:
@@ -44,19 +78,18 @@ class RandomLocationObjectSpawner(ObjectSpawner):
             except AssertionError:
                 continue
 
-class GenerateWorldObjects(WorldAction):
 
-    def __init__(self, parameters, objs_buffer: list, world_map):
+class PopulateWorld(WorldAction):
+
+    def __init__(self, parameters, world_map):
         super().__init__(world_map)
-        self.objs_buffer = objs_buffer
         self.parameters = parameters
 
     def execute(self):
-        _id = 1
-        objects = self.objs_buffer
         cells_number = self._world_map.width*self._world_map.length
         wparams = self.parameters
         for obj_type in OBJ_TYPES:
+            spawner = RandomLocationObjectSpawner(self._world_map, wparams, obj_type)
             if not wparams.getboolean('DEFAULT', 'RandomizeMap'):
                 n = wparams.getint('DEFAULT', f'n{obj_type.__name__}')
             else:
@@ -66,47 +99,7 @@ class GenerateWorldObjects(WorldAction):
                 n = random.randint(*rand_boundaries)
 
             for i in range(n):
-                obj_params = self.get_parameters(obj_type)
-                if issubclass(obj_type, Creature):
-                    _id += 1
-                    obj_params['_id'] = _id
-                obj = obj_type(**obj_params)
-                objects.append(obj)
-
-    def get_parameters(self, for_obj_type):
-        # if parameter was not initialized on start input request
-        # or set up manually in configs.ini, then it is generated randomly
-        # using boundaries defined in configs.ini
-        gparameters = self.parameters
-        obj_parameters = {}
-        types_section = gparameters[for_obj_type.__name__.upper()]
-        for obj_param in types_section:
-            if obj_param in gparameters['DEFAULT']:  # this lets bypassing of a redundant default keys in section  -
-                continue                             # configparser's unwanted behaviour for our case
-            obj_parameters[obj_param] = val = types_section[obj_param]
-            if not val:
-                rand_boundaries = [int(b) for b in
-                                   gparameters.get(f'RAND.{for_obj_type.__name__.upper()}_PARAMS', obj_param).split(',')]
-                fallback = random.randint(*rand_boundaries)
-                obj_parameters[obj_param] = fallback
-        return obj_parameters
-
-
-class PopulateWorld(WorldAction):
-
-    def __init__(self, wparams, objs_buffer, world_map):
-        super().__init__(world_map)
-        self.objs_buffer = objs_buffer
-        self.obj_types = OBJ_TYPES
-        self.wparams = wparams
-
-    def execute(self):
-        _map = self._world_map
-        # placing objects on map
-        spawner = RandomLocationObjectSpawner(_map)
-        for obj in self.objs_buffer:
-            spawner.obj = obj
-            spawner.spawn()
+                spawner.spawn()
 
 
 class MakeEachObjDoMove(WorldAction):
