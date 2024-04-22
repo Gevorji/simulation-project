@@ -98,6 +98,15 @@ class Simulation:
             wact.execute()
         self.logger.close_turn_session()
         self.renderer.render()
+        self.turn_count += 1
+
+    def change_frame(self, *components, input_request: None | str = None):
+        os.system('cls')
+        frame = '\n'.join(components)
+        print(frame)
+        if input_request:
+            self.last_input = input(input_request)
+
 
 
 @dataclass
