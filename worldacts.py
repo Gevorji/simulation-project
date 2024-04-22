@@ -57,7 +57,9 @@ class ObjectSpawner:
         for obj_param in obj_params:
             if obj_param in wparams['DEFAULT']:  # this lets bypassing of a redundant default keys in section  -
                 continue                             # configparser's unwanted behaviour for our case
-            inst_params[obj_param] = val = obj_params[obj_param]
+            val = obj_params[obj_param]
+            val = int(val) if val.isdecimal() else val
+            inst_params[obj_param] = val
             if not val:
                 rand_boundaries = [int(b) for b in
                                    wparams.get(f'RAND.{self.obj_type.__name__.upper()}_PARAMS', obj_param).split(',')]
