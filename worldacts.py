@@ -133,8 +133,8 @@ class MakeEachObjDoMove(WorldAction):
 
     def get_visible_area_for_creature(self, cell):
 
-        x_lim = self._world_map.width
-        y_lim = self._world_map.length
+        x_lim = self._world_map.width - 1
+        y_lim = self._world_map.length - 1
         creature = cell.content
         vis_rad = creature.vis_radius
         top_left_point_x = cell.x - vis_rad if cell.x > vis_rad else 0
@@ -145,7 +145,7 @@ class MakeEachObjDoMove(WorldAction):
         bot_right_point_y = y_lim if bot_right_point_y > y_lim else bot_right_point_y
 
         return self._world_map.field_iterator(from_point=(top_left_point_x, top_left_point_y),
-                                              to_point=(bot_right_point_x, bot_right_point_y))
+                                              to_point=(bot_right_point_x, bot_right_point_y), return_contents=False)
 
 
 class ResourceRestoring(WorldAction):
