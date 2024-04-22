@@ -68,7 +68,8 @@ class Simulation:
             wacts.Herbivore: 'H',
             wacts.Predator: 'P',
             wacts.Grass: 'GR',
-            wacts.Rock: 'X'
+            wacts.Rock: 'X',
+            type(None): ' '
         }
         self.renderer = Renderer(_map, layout_mappings=objects_lmappings)
         self.turn_count: int = 0
