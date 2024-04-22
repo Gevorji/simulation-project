@@ -84,11 +84,18 @@ class Simulation:
 
         keyboard.on_release_key('space', on_pause)
 
+        self.renderer.render()
+        self.change_frame(self.renderer.display(), '([Нажмите пробел для старта]')
+        keyboard.wait('space')
+        self.is_paused = False
+
         self.run()
 
     def run(self):
         while True:
             self.next_turn()
+            self.change_frame(self.renderer.display(),
+                              f'Счетчик ходов: {self.turn_count}')
             if self.is_paused:
                 self.pause()
 
