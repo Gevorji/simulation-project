@@ -45,7 +45,7 @@ INP_PARAM_CONFIG_PARAM_MAP = {
 class Simulation:
 
     pause_options_patterns = [
-        re.compile('c'), re.compile('show(\\d+)t', re.compile('n'))
+        re.compile('c'), re.compile('show(\\d+)t'), re.compile('n')
     ]
 
     def __init__(self, params):
