@@ -8,6 +8,7 @@ import configparser
 import simulationlogger
 from map import Map
 from renderer import ConsoleRenderer as Renderer
+import worldacts as wacts
 from lib import keyboard
 
 # initial world properties
@@ -50,8 +51,7 @@ class Simulation:
 
     def __init__(self, params):
         self.params = params
-        import worldacts as wacts
-        _map = Map(params.getint('DEFAULT', 'field.width', ), params.getint('DEFAULT', 'field.length', ))
+        _map = self._world_map = Map(params.getint('DEFAULT', 'field.width', ), params.getint('DEFAULT', 'field.length', ))
         action_handler = wacts.Handler()
         self.logger = logger = simulationlogger.Logger()
         objects_buffer = []
@@ -60,9 +60,9 @@ class Simulation:
         ]
         self._turn_actions = [
             wacts.MakeEachObjDoMove(action_handler, logger,_map),
-            wacts.ResourceRestoring(wacts.Grass, 0.3 * _map.get_objs_numbers()[wacts.Grass],
+            wacts.ResourceRestoring(wacts.Grass, 0,
                                     logger,
-                                    wacts.RandomLocationObjectSpawner(_map, wacts.Grass))
+                                    wacts.RandomLocationObjectSpawner(_map, params, wacts.Grass), _map)
         ]
         objects_lmappings = {
             wacts.Herbivore: 'H',
@@ -79,6 +79,8 @@ class Simulation:
     def start(self):
         for wact in self._init_actions:
             wact.execute()
+
+        self._turn_actions[1].min_resource_limit = 0.3*self._world_map.get_objs_numbers()[wacts.Grass]
 
         def on_pause(*args):
             self.is_paused = True
