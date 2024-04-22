@@ -48,8 +48,8 @@ def make_presentational_format(entry):
         action = entry.action
         actor = entry.actor
         target = entry.target
-        actor_name, = getattr(actor.content, '_name', '(nameless)'),
-        target_name = getattr(target.content, '_name', '(nameless)')
+        actor_name, = getattr(actor.content, 'name', '(nameless)'),
+        target_name = getattr(target.content, 'name', '(nameless)')
         if action is None:
             return f'{actor_name} (pos {actor.x, actor.y}) does nothing'
         act_type = {Actions.ATTACK: 'attack', Actions.EAT: 'eating', Actions.MOVE: 'move'}[action.type]
@@ -57,7 +57,7 @@ def make_presentational_format(entry):
 
     if isinstance(entry, EntityStateEntry):
         entity = entry.entity
-        entity_name = getattr(entity.content, '_name', '(nameless)')
+        entity_name = getattr(entity.content, 'name', '(nameless)')
         return f'{entity_name} (pos {entity.x, entity.y}) state: hp={entry.hp}'
 
     if isinstance(entry, RestorationObjectsEntry):
