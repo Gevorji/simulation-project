@@ -112,7 +112,7 @@ class MakeEachObjDoMove(WorldAction):
     def execute(self):
         _map = self._world_map
         logger = self.logger
-        for cell in _map.field_iterator():
+        for cell in _map.field_iterator(return_contents=False):
             entity = cell.content
             if hasattr(entity, 'make_move'):
                 vis_area = self.get_visible_area_for_creature(cell)
