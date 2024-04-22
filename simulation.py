@@ -1,4 +1,6 @@
-#!./venv/bin/python
+import os
+import os.path
+import sys
 import re
 from dataclasses import dataclass
 import configparser
@@ -6,9 +8,7 @@ import configparser
 import simulationlogger
 from map import Map
 from renderer import ConsoleRenderer as Renderer
-import random
-import sys
-
+from lib import keyboard
 
 # initial world properties
 # TODO: parameters should be loaded from ini file, user should be able to set his own one-run parameters as
@@ -44,6 +44,10 @@ INP_PARAM_CONFIG_PARAM_MAP = {
 
 class Simulation:
 
+    pause_options_patterns = [
+        re.compile('c'), re.compile('show(\\d+)t', re.compile('n'))
+    ]
+
     def __init__(self, params):
         self.params = params
         import worldacts as wacts
@@ -67,30 +71,49 @@ class Simulation:
             wacts.Rock: 'X'
         }
         self.renderer = Renderer(_map, layout_mappings=objects_lmappings)
+        self.turn_count: int = 0
+        self.last_input = None
+        self.is_paused = False
 
     def start(self):
         for wact in self._init_actions:
             wact.execute()
 
-        import threading
-        pause_flag = threading.Event()
+        def on_pause(*args):
+            self.is_paused = True
 
-        def pause_press_listener():
-            # some code that listens to kb pressing and sets flag to true and false alternately
-            pass
+        keyboard.on_release_key('space', on_pause)
 
-        pause_listening_thr = threading.Thread(target=pause_press_listener)
-        pause_listening_thr.start()
-        self.run(pause_flag)
+        self.run()
 
-    def run(self, pause_flag):
+    def run(self):
         while True:
-            pause_flag.wait()
             self.next_turn()
-            self.renderer.display()
+            if self.is_paused:
+                self.pause()
 
     def pause(self):
-        pass
+        options_patterns = self.pause_options_patterns
+        self.change_frame(self.renderer.display(), input_request='Введите_команду> ')
+        inp = self.last_input
+        try:
+            match = next(filter(None, (p.match(inp) for p in options_patterns)))
+        except StopIteration:
+            self.change_frame(self.renderer.display(),
+                              'Пожалуйста, введите правильную опцию',
+                              input_request='Введите_команду> ')
+
+        if match.re == options_patterns[0]:
+            self.is_paused = False
+            return
+
+        if match.re == options_patterns[1]:
+            nturn = match.group(1)
+            log = self.logger.get_turn_logging(nturn)
+            self.change_frame(self.renderer.display(), log, input_request='Введите команду>')
+
+        if match.re == options_patterns[2]:
+            return
 
     def next_turn(self):
         self.logger.start_turn_session()
