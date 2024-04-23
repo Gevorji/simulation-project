@@ -119,13 +119,15 @@ class Simulation:
     def pause(self):
         options_patterns = self.pause_options_patterns
         self.change_frame(self.renderer.display(), input_request='Введите_команду> ')
-        inp = self.last_input
-        try:
-            match = next(filter(None, (p.match(inp) for p in options_patterns)))
-        except StopIteration:
-            self.change_frame(self.renderer.display(),
-                              'Пожалуйста, введите правильную опцию',
-                              input_request='Введите_команду> ')
+        while True:
+            inp = self.last_input
+            try:
+                match = next(filter(None, (p.match(inp) for p in options_patterns)))
+                break
+            except StopIteration:
+                self.change_frame(self.renderer.display(),
+                                  'Пожалуйста, введите правильную опцию',
+                                  input_request='Введите_команду> ')
 
         if match.re == options_patterns[0]:
             self.is_paused = False

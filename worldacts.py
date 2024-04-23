@@ -229,6 +229,8 @@ class Handler:
         if hasattr(consumable, 'consume') and hasattr(eater, 'restore_hp'):
             eater.restore_hp(consumable.consume())
 
+    action_handler_bindings[ObjActions.EAT] = handle_attack
+
     @staticmethod
     def handle_state(cell):
         entity = cell.content
