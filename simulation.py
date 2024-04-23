@@ -81,16 +81,15 @@ class Simulation:
 
         self._turn_actions[1].min_resource_limit = 0.3*self._world_map.get_objs_numbers()[wacts.Grass]
 
-        def on_pause(*args):
-            self.is_paused = True
-
-        keyboard.on_release_key('space', on_pause)
-
         self.renderer.render()
         self.change_frame(self.renderer.display(), '([Нажмите пробел для старта]')
         keyboard.wait('space')
-        self.is_paused = False
 
+        def on_pause(*args):
+            self.is_paused = True
+
+        keyboard.on_press_key('space', on_pause)
+        
         self.run()
 
     def run(self):
