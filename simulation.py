@@ -2,6 +2,7 @@ import os
 import os.path
 import sys
 import re
+import time
 from dataclasses import dataclass
 import configparser
 
@@ -49,9 +50,10 @@ class Simulation:
         re.compile('c'), re.compile('show(\\d+)t'), re.compile('n')
     ]
 
-    def __init__(self, params):
+    def __init__(self, params: configparser.ConfigParser):
         self.params = params
         _map = self._world_map = Map(params.getint('DEFAULT', 'field.width', ), params.getint('DEFAULT', 'field.length', ))
+        self.frspeed = params.getint('DEFAULT', 'frspeed')
         action_handler = wacts.Handler()
         self.logger = logger = simulationlogger.Logger()
         objects_buffer = []
@@ -89,16 +91,30 @@ class Simulation:
             self.is_paused = True
 
         keyboard.on_press_key('space', on_pause)
-        
+
         self.run()
 
+    @staticmethod
+    def run_with_fixed_frequency(runner_func):
+
+        def execute_controller(self):
+            while True:
+                if self.is_paused:
+                    self.pause()
+                start = time.perf_counter()
+                runner_func(self)
+                end = time.perf_counter()
+                lag = 1/self.frspeed - (end-start)
+                if lag > 0:
+                    time.sleep(lag)
+
+        return execute_controller
+
+    @run_with_fixed_frequency
     def run(self):
-        while True:
-            self.next_turn()
-            self.change_frame(self.renderer.display(),
-                              f'Счетчик ходов: {self.turn_count}')
-            if self.is_paused:
-                self.pause()
+        self.next_turn()
+        self.change_frame(self.renderer.display(),
+                          f'Счетчик ходов: {self.turn_count}')
 
     def pause(self):
         options_patterns = self.pause_options_patterns
