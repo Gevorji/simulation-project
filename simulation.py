@@ -120,26 +120,32 @@ class Simulation:
         options_patterns = self.pause_options_patterns
         self.change_frame(self.renderer.display(), input_request='Введите_команду> ')
         while True:
-            inp = self.last_input
-            try:
-                match = next(filter(None, (p.match(inp) for p in options_patterns)))
-                break
-            except StopIteration:
-                self.change_frame(self.renderer.display(),
-                                  'Пожалуйста, введите правильную опцию',
-                                  input_request='Введите_команду> ')
+            while True:
+                inp = self.last_input.strip()
+                try:
+                    match = next(filter(None, (p.match(inp) for p in options_patterns)))
+                    break
+                except StopIteration:
+                    self.change_frame(self.renderer.display(),
+                                      'Пожалуйста, введите правильную опцию',
+                                      input_request='Введите_команду> ')
 
-        if match.re == options_patterns[0]:
-            self.is_paused = False
-            return
+            if match.re == options_patterns[0]:
+                self.is_paused = False
+                return
 
-        if match.re == options_patterns[1]:
-            nturn = match.group(1)
-            log = self.logger.get_turn_logging(nturn)
-            self.change_frame(self.renderer.display(), log, input_request='Введите команду>')
+            if match.re == options_patterns[1]:
+                nturn = int(match.group(1))
+                if nturn > self.turn_count:
+                    msg = f'Текущее количество ходов - {self.turn_count}. Введите правильный номер хода для вывода лога'
+                    self.change_frame(self.renderer.display(), msg,
+                                      input_request='Введите команду>')
+                    continue
+                log = f'Turn {nturn} log: ' + '\n'.join(self.logger.get_turn_logging(nturn))
+                self.change_frame(self.renderer.display(), log, input_request='Введите команду>')
 
-        if match.re == options_patterns[2]:
-            return
+            if match.re == options_patterns[2]:
+                return
 
     def next_turn(self):
         self.logger.start_turn_session()
