@@ -81,7 +81,7 @@ class Simulation:
         for wact in self._init_actions:
             wact.execute()
 
-        self._turn_actions[1].min_resource_limit = 0.3*self._world_map.get_objs_numbers()[wacts.Grass]
+        self._turn_actions[1].min_resource_limit = 0.3*self._world_map.get_objs_numbers().get(wacts.Grass, 0)
 
         self.renderer.render()
         self.change_frame(self.renderer.display(), '([Нажмите пробел для старта]')
