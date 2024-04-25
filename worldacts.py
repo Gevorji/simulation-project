@@ -29,11 +29,15 @@ class ObjectSpawner:
     _spawn_count = 0
 
     def __init__(self, _world_map, wparams, obj_type: Union[*OBJ_TYPES] = None, target_cell: wmap.Cell = None):
-        self.obj_params = wparams[obj_type.__name__.upper()]
+        self.obj_params = wparams[obj_type.__name__.upper()] if obj_type else None
         self.wparams = wparams
         self._world_map = _world_map
         self.target_cell = target_cell
         self.obj_type = obj_type
+
+    def set_obj_type(self, obj_type):
+        self.obj_type = obj_type
+        self.obj_params = self.wparams[obj_type.__name__.upper()]
 
     def generate_obj(self):
         self.__class__._spawn_count += 1
