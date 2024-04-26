@@ -72,7 +72,8 @@ class Simulation:
             wacts.Rock: 'X',
             type(None): ' '
         }
-        self.renderer = Renderer(_map, layout_mappings=objects_lmappings)
+        self.renderer = Renderer(_map, layout_mappings=objects_lmappings,
+                                 enumerate_axis=params.getboolean('DEFAULT', 'axis_enumeration'))
         self.turn_count: int = 0
         self.last_input = None
         self.is_paused = False
