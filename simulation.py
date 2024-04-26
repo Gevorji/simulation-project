@@ -209,25 +209,26 @@ class ParameterInputError(Exception):
     pass
 
 def apply_inputted_parameters(params: list, configs):
+    default_sect = configs['DEFAULT']
     for param in params:
         if param.re.pattern == INP_PARAMETERS_PATTERNS[0]:
-            section = configs['DEFAULT']
+            section = default_sect
             width, length = param.value.split('*')
             section['field.width'] = width
             section['field.length'] = length
         if param.re.pattern == INP_PARAMETERS_PATTERNS[1]:
-            section = configs['DEFAULT']
+            section = default_sect
             section[param.name] = param.value
         if param.re.pattern == INP_PARAMETERS_PATTERNS[2]:
-            section = configs['DEFAULT']
+            section = default_sect
             section['RandomizeMap'] = str(param.value)
         if param.re.pattern == INP_PARAMETERS_PATTERNS[3]:
-            section = configs['DEFAULT']
+            section = default_sect
             section[param.name] = param.value
         if param.re.pattern == INP_PARAMETERS_PATTERNS[4]:
             obj_name, attr = param.name.split('.')
             section = configs[f'{obj_name.upper()}']
-            attr = {
+            attr: str = {
                 'ms': 'move_speed',
                 'ad': 'attack_damage',
                 'visr': 'vis_rad',
@@ -236,6 +237,8 @@ def apply_inputted_parameters(params: list, configs):
             }[attr]
             if attr not in section:
                 raise ParameterInputError(f'{obj_name} не имеет параметра {attr}')
+            if param.value.isdecimal() and int(param.value) <= 0:
+                raise ParameterInputError(f'{attr} должен быть больше 0')
             section[attr] = param.value
 
 if __name__ == '__main__':
