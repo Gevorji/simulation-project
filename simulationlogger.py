@@ -61,5 +61,5 @@ def make_presentational_format(entry):
         return f'{entity_name} (pos {entity.x, entity.y}) state: hp={entry.hp}'
 
     if isinstance(entry, RestorationObjectsEntry):
-        return f'Restoring {entry.object_type}: {entry.how_much} units'
+        return f'Restoring {entry.object_type}: {str(int(entry.how_much))} units'
 
