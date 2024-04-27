@@ -243,6 +243,6 @@ class Handler:
     def handle_state(cell):
         entity = cell.content
         if hasattr(entity, 'is_dead'):
-            if entity.is_dead():
+            if entity.is_dead:
                 cell.pop()
         # how do we handle eaten Grass?
