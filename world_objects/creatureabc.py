@@ -15,6 +15,7 @@ class Creature(Entity):
                        '_abs_pos']
 
     def __init__(self, health_points, move_speed, vis_radius, sex, _id=None):  # sex field is reserved for breeding mechanics
+        super().__init__(health_points)
         self.sex = sex
         self.vis_radius = vis_radius
         self.health_points = health_points
@@ -28,11 +29,6 @@ class Creature(Entity):
         area = tuple(area)
         self._memory['_area'] = area
         self.get_area_grid()
-
-    def take_damage(self, damage):
-        self.health_points -= damage
-        if self.health_points <= 0:
-            self.is_alive = False
 
     def get_nearby_cells(self):
         grid = self._memory['_area_grid']
