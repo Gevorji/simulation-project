@@ -237,7 +237,7 @@ class Handler:
         if hasattr(consumable, 'consume') and hasattr(eater, 'restore_hp'):
             eater.restore_hp(consumable.consume())
 
-    action_handler_bindings[ObjActions.EAT] = handle_attack
+    action_handler_bindings[ObjActions.EAT] = handle_eating
 
     @staticmethod
     def handle_state(cell):
