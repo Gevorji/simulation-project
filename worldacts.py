@@ -130,14 +130,14 @@ class MakeEachObjDoMove(WorldAction):
                         continue
                     procedure = self.act_handler.handle(cell, action, _map)
                     target_cell = procedure.args[1]
-                    if action.type is ObjActions.MOVE:
-                        cell = target_cell
                     logger.register(simulationlogger.ActionEntry(action, cell, target_cell))
                     procedure()
                     if isinstance(target_cell.content, world_objects.entityabc.Entity):
-                        self.act_handler.handle_state(target_cell)
                         logger.register(simulationlogger.EntityStateEntry(target_cell,
                                                                           target_cell.content.health_points))
+                        self.act_handler.handle_state(target_cell)
+                    if action.type is ObjActions.MOVE:
+                        cell = target_cell
 
     def get_visible_area_for_creature(self, cell):
 
