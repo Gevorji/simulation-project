@@ -233,7 +233,7 @@ def apply_inputted_parameters(params: list, configs):
                 'ad': 'attack_damage',
                 'visr': 'vis_rad',
                 'hp': 'health_points',
-                'heal': ''  # TODO: put full attr name here
+                'heal': 'hp_restore'
             }[attr]
             if attr not in section:
                 raise ParameterInputError(f'{obj_name} не имеет параметра {attr}')
