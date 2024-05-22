@@ -23,9 +23,11 @@ INP_PARAMETERS_PATTERNS = [
 
 INP_PARAM_DELIM = '='
 
-INP_PARAM_CONFIG_PARAM_MAP = {
-    'mpsize': 'FIELD'
-}
+
+def get_layout_symbols(configs, layout_sect, objs):
+    # Layout symbols should be specified in config file by their unicode code points in hexadecimal scale of notation
+    sect = configs[layout_sect]
+    return {cls: chr(int(sect.get(cls.__name__), 16)) for cls in objs}
 
 
 class Simulation:
@@ -49,13 +51,9 @@ class Simulation:
             wacts.ResourceRestoring(wacts.Grass, 0,
                                     wacts.RandomLocationObjectSpawner(_map, params, wacts.Grass), logger, _map)
         ]
-        objects_lmappings = {
-            wacts.Herbivore: 'H',
-            wacts.Predator: 'P',
-            wacts.Grass: 'GR',
-            wacts.Rock: 'X',
-            type(None): ' '
-        }
+        objects_lmappings = get_layout_symbols(params, 'CONSOLE_LAYOUT_SYMBOLS',
+                                               (wacts.Grass, wacts.Rock, wacts.Predator, wacts.Herbivore, type(None))
+                                               )
         self.renderer = Renderer(_map, layout_mappings=objects_lmappings,
                                  enumerate_axis=params.getboolean('DEFAULT', 'axis_enumeration'))
         self.turn_count: int = 0
