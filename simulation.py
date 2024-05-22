@@ -38,7 +38,8 @@ class Simulation:
 
     def __init__(self, params: configparser.ConfigParser):
         self.params = params
-        _map = self._world_map = Map(params.getint('DEFAULT', 'field.width', ), params.getint('DEFAULT', 'field.length', ))
+        _map = self._world_map = Map(params.getint('DEFAULT', 'field.width', ),
+                                     params.getint('DEFAULT', 'field.length',))
         self.frspeed = params.getint('DEFAULT', 'frspeed')
         action_handler = wacts.Handler()
         self.logger = logger = simulationlogger.Logger()
