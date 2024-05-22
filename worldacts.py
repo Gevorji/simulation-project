@@ -120,9 +120,12 @@ class MakeEachObjDoMove(WorldAction):
     def execute(self):
         _map = self._world_map
         logger = self.logger
+        done_move = []
         for cell in _map.field_iterator(return_contents=False):
             entity = cell.content
             if hasattr(entity, 'make_move'):
+                if entity in done_move:
+                    continue
                 vis_area = self.get_visible_area_for_creature(cell)
                 for action in entity.make_move(vis_area):  # because we expect obj to produce 1 or more actions
                     if action is None:
@@ -138,6 +141,7 @@ class MakeEachObjDoMove(WorldAction):
                         self.act_handler.handle_state(target_cell)
                     if action.type is ObjActions.MOVE:
                         cell = target_cell
+                done_move.append(entity)
 
     def get_visible_area_for_creature(self, cell):
 
