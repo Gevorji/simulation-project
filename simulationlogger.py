@@ -16,7 +16,8 @@ class ActionEntry:
         self.target = 'cell' if not self._target.content else (
             getattr(self._target.content, 'name', self._target.content.__class__.__name__))
         self.target_pos = self._target.x, self._target.y
-        self.act_type = {Actions.ATTACK: 'attack', Actions.EAT: 'eating', Actions.MOVE: 'move'}[self.action.type]
+        if self.action:
+            self.act_type = {Actions.ATTACK: 'attack', Actions.EAT: 'eating', Actions.MOVE: 'move'}[self.action.type]
 
 
 @dataclasses.dataclass
