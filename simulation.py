@@ -12,22 +12,6 @@ from renderer import EdgelessConsoleRenderer as Renderer
 import worldacts as wacts
 from lib import keyboard
 
-# initial world properties
-# TODO: parameters should be loaded from ini file, user should be able to set his own one-run parameters as
-#  commandline args or with input as the initial step after simulation has been launched
-
-default_gen_parameters = dict(
-    STANDARD_FIELD_SZ=(10, 10),
-    STANDARD_PREDATORS_NUMBER=5,
-    STANDARD_HERBIVORES_NUMBER=5,
-    STANDARD_ROCKS_NUMBER=20,
-    STANDARD_GRASS_NUMBER=30,
-    STANDARD_CREATURE_VELOCITY=1,
-    RANDOMIZE_CREATURES_NUMBER=False,
-    USR_RAND_BOUNDARIES_FOR_CREATURES=(),
-    USR_RAND_BOUNDARIES_FOR_GRASS=(),
-    USR_CREATURE_VELOCITY=None
-)
 
 INP_PARAMETERS_PATTERNS = [
     '(mapsz)=(\\d+[*]\\d+)',
