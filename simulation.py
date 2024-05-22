@@ -46,10 +46,16 @@ class Simulation:
         self._init_actions = [
             wacts.PopulateWorld(params, _map)
         ]
+
+        for wact in self._init_actions:
+            wact.execute()
+
         self._turn_actions = [
             wacts.MakeEachObjDoMove(action_handler, logger,_map),
-            wacts.ResourceRestoring(wacts.Grass, 0,
-                                    wacts.RandomLocationObjectSpawner(_map, params, wacts.Grass), logger, _map)
+            wacts.ResourceRestoring(wacts.Grass, round(self._world_map.get_objs_numbers()[wacts.Grass]*0.5),
+                                    wacts.RandomLocationObjectSpawner(_map, params, wacts.Grass), logger, _map),
+            wacts.ResourceRestoring(wacts.Herbivore, round(self._world_map.get_objs_numbers()[wacts.Herbivore]*0.5),
+                                    wacts.RandomLocationObjectSpawner(_map, params, wacts.Herbivore), logger, _map)
         ]
         objects_lmappings = get_layout_symbols(params, 'CONSOLE_LAYOUT_SYMBOLS',
                                                (wacts.Grass, wacts.Rock, wacts.Predator, wacts.Herbivore, type(None))
@@ -61,8 +67,6 @@ class Simulation:
         self.is_paused = False
 
     def start(self):
-        for wact in self._init_actions:
-            wact.execute()
 
         self._turn_actions[1].min_resource_limit = 0.3*self._world_map.get_objs_numbers().get(wacts.Grass, 0)
 
