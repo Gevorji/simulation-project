@@ -24,6 +24,8 @@ pparser = InpParametersParser(INP_PARAMETERS_PATTERNS, '=')
 
 test_input = [
     'mapsz=5*5, nHerbivore=1 nPredator=1 nRock=20',
+    'mapsz=20*20',
+    ''
 ]
 
 test_map_configuration = [
