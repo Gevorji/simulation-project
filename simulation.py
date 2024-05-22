@@ -8,7 +8,7 @@ import configparser
 
 import simulationlogger
 from map import Map
-from renderer import ConsoleRenderer as Renderer
+from renderer import EdgelessConsoleRenderer as Renderer
 import worldacts as wacts
 from lib import keyboard
 

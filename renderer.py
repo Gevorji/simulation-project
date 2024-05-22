@@ -46,6 +46,15 @@ class ConsoleRenderer(BaseRectangleFieldRenderer):
         return enum_x + '\n' + horiz_border + '\n' + ('\n' + horiz_border + '\n').join(rows) + '\n' + horiz_border
 
 
+class EdgelessConsoleRenderer(ConsoleRenderer):
+
+    def display(self):
+        row_enum = (str(y) if self.enumerate_axis else '' for y in range(self.length))
+        col_enum = (str(x) if self.enumerate_axis else '' for x in range(self.width))
+        rows = [next(row_enum) + ' '.join(self.field[x, y].content for x in range(self.width)) for y in range(self.length)]
+
+        return (' ' + ' '.join(col_enum) + '\n' if self.enumerate_axis else '') + ('\n'*2).join(rows)
+
 if __name__ == '__main__':
     renderer = ConsoleRenderer(Map(5, 5), layout_mappings={type(None): 'Empty'})
     renderer.render()
