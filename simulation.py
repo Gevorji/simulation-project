@@ -230,23 +230,23 @@ def apply_inputted_parameters(params: list, configs):
 
 if __name__ == '__main__':
 
-    param_parser = InpParametersParser(INP_PARAMETERS_PATTERNS)
+    if '--write-stconfig' in sys.argv or not os.path.exists('configs.ini'):
+        import standardconfigswriter
+        standardconfigswriter.main()
+
+    param_parser = InpParametersParser(INP_PARAMETERS_PATTERNS, INP_PARAM_DELIM)
     configs = configparser.ConfigParser()
     configs.read('configs.ini')
+
     while True:
-        inp = input('Enter stuff: ')
-        # inp = 'Herbivore.heal=4'
+        inp = input('Enter custom parameters: ')
         try:
             parsed = param_parser.parse(inp)
-            print([f'{param.name} set to {param.value}' for param in parsed])
             apply_inputted_parameters(parsed, configs)
         except ParameterInputError as e:
             print(e)
         else:
             break
 
-
-
-    # here it is necessary to check whether config file exists
-    # if it doesn't exist, we write it with standardconfigswriter.py
-
+    sim = Simulation(configs)
+    sim.start()
