@@ -98,7 +98,7 @@ class PopulateWorld(WorldAction):
             spawner = RandomLocationObjectSpawner(self._world_map, wparams, obj_type)
             rand_boundaries = tuple(round(float(param) * cells_number) or 1 for param
                                     in
-                                    wparams['RANDOM_OBJ_NUMBERS_RATIOS'][f'{obj_type.__name__}Number'].split(','))
+                                    wparams['RAND.OBJ_NUMBERS_RATIOS'][f'{obj_type.__name__}Number'].split(','))
             n = wparams.get('DEFAULT', f'n{obj_type.__name__}')
             if not n:
                 n = random.randint(*rand_boundaries)
