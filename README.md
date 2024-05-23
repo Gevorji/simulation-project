@@ -17,6 +17,5 @@ C:\Users\User\Desktop\simulation-project> python .\simulation\simulation.py
 ```
 simulation.py - входная точка приложения.
 
-Примечания
-==========
+## Примечания
 Запускайте программу из-под терминала, поддерживающего кодировку unicode, для корректного отображения символов эмодзи (для Windows, например, Windows Terminal).  
